@@ -179,6 +179,25 @@ class Router:
         print('')
 
         print('| RA |', end = '')
+        for dest in keys:
+            if 'RA' in self.rt_tbl_D[dest]:
+                print('  ' + str(self.rt_tbl_D[dest]['RA']) + ' ', end = '|')
+            else:
+                print(' ~~ ', end = '|')
+        print('')
+
+        print('|', end = '')
+        for x in range(0, len(keys) + 1):
+            print('----', end = '|')
+        print('')
+
+        print('| RB |', end = '')
+        for dest in keys:
+            if 'RB' in self.rt_tbl_D[dest]:
+                print('  ' + str(self.rt_tbl_D[dest]['RB']) + ' ', end = '|')
+            else:
+                print(' ~~ ', end = '|')
+        print('')
 
         #print bottom decoration of table
         print('|', end = '')
