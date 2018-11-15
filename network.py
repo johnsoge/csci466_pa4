@@ -1,5 +1,6 @@
 import queue
 import threading
+from ast import literal_eval #allows for a string to be converted to a dict
 
 
 ## wrapper class for a queue of packets
@@ -252,7 +253,7 @@ class Router:
     def send_routes(self, i):
         # TODO: Send out a routing table update
         #create a routing table update packet
-        p = NetworkPacket(0, 'control', 'DUMMY_ROUTING_TABLE')
+        p = NetworkPacket(0, 'control', str(self.rt_tbl_D))
         try:
             print('%s: sending routing update "%s" from interface %d' % (self, p, i))
             self.intf_L[i].put(p.to_byte_S(), 'out', True)
@@ -266,6 +267,33 @@ class Router:
     def update_routes(self, p, i):
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
+        new_table = literal_eval(p.data_S)
+
+        update = False
+
+        #iterate through the sent in table
+        for new_key in new_table.keys():
+            #iterate through the inner dictionary of the sent in table
+            for rtr in new_table[new_key]:
+                #if the destination is already in the table, but the original router is not, will be changed to allow distance checking
+                if (new_key in self.rt_tbl_D) and (not rtr in self.rt_tbl_D[new_key]):
+                    update = True
+                    self.rt_tbl_D[new_key][rtr] = new_table[new_key][rtr]
+                #if the destination is not in the table
+                elif not new_key in self.rt_tbl_D:
+                    update = True
+                    self.rt_tbl_D[new_key] = new_table[new_key]
+
+        #Sort the dict to allow a better printing
+        temp = {}
+        for x in sorted(self.rt_tbl_D):
+            temp[x] = self.rt_tbl_D[x]
+        self.rt_tbl_D = temp
+
+        if update:
+            for i in range(len(self.intf_L)):
+                self.send_routes(i)
+
         print('%s: Received routing update %s from interface %d' % (self, p, i))
 
 
