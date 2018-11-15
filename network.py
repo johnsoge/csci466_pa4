@@ -206,7 +206,7 @@ class Router:
             print('====', end = '|')
         print('')
 
-        #print(self.rt_tbl_D)
+        print('Print routing table: ' + str(self.rt_tbl_D))
 
 
     ## called when printing the object
@@ -272,17 +272,19 @@ class Router:
         update = False
 
         #iterate through the sent in table
-        for new_key in new_table.keys():
+        for dest in list(new_table):
             #iterate through the inner dictionary of the sent in table
-            for rtr in new_table[new_key]:
-                #if the destination is already in the table, but the original router is not, will be changed to allow distance checking
-                if (new_key in self.rt_tbl_D) and (not rtr in self.rt_tbl_D[new_key]):
+            for rtr in list(new_table[dest]):
+                #if the destination is already in the table, but the original router is not
+                if (dest in self.rt_tbl_D) and (not rtr in self.rt_tbl_D[dest]):
                     update = True
-                    self.rt_tbl_D[new_key][rtr] = new_table[new_key][rtr]
+                    self.rt_tbl_D[dest][rtr] = new_table[dest][rtr]
                 #if the destination is not in the table
-                elif not new_key in self.rt_tbl_D:
+                elif not dest in self.rt_tbl_D:
                     update = True
-                    self.rt_tbl_D[new_key] = new_table[new_key]
+                    self.rt_tbl_D[dest] = new_table[dest]
+                    #add path cost from current router to new destination
+                    self.rt_tbl_D[dest][self.name] = new_table[dest][rtr] + self.rt_tbl_D[rtr][self.name]
 
         #Sort the dict to allow a better printing
         temp = {}
@@ -294,7 +296,7 @@ class Router:
             for i in range(len(self.intf_L)):
                 self.send_routes(i)
 
-        print('%s: Received routing update %s from interface %d' % (self, p, i))
+        #print('%s: Received routing update %s from interface %d' % (self, p, i))
 
 
     ## thread target for the host to keep forwarding data
