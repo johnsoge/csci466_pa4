@@ -157,7 +157,7 @@ class Router:
 
     ## Print routing table
     def print_routes(self):
-        keys = self.rt_tbl_D.keys()
+        keys = list(self.rt_tbl_D)
         #print top decoration of table
         print('|', end = '')
         for x in range(0, len(keys) + 1):
@@ -179,32 +179,22 @@ class Router:
             print('====', end = '|')
         print('')
 
-        print('| RA |', end = '')
-        for dest in keys:
-            if 'RA' in self.rt_tbl_D[dest]:
-                print('  ' + str(self.rt_tbl_D[dest]['RA']) + ' ', end = '|')
-            else:
-                print(' ~~ ', end = '|')
-        print('')
+        #get a list of all routers
+        router_list = list(self.rt_tbl_D[keys[0]])
+        #iterate through each router currently in the routing table and print entries for it
+        for router in router_list:
+            print('| ' + router + ' ', end = '|')
 
-        print('|', end = '')
-        for x in range(0, len(keys) + 1):
-            print('----', end = '|')
-        print('')
 
-        print('| RB |', end = '')
-        for dest in keys:
-            if 'RB' in self.rt_tbl_D[dest]:
-                print('  ' + str(self.rt_tbl_D[dest]['RB']) + ' ', end = '|')
-            else:
-                print(' ~~ ', end = '|')
-        print('')
+            for dest in self.rt_tbl_D:
+                print('  ' + str(self.rt_tbl_D[dest][router]) + ' ', end = '|')
+            print('\n', end = '|')
 
-        #print bottom decoration of table
-        print('|', end = '')
-        for x in range(0, len(keys) + 1):
-            print('====', end = '|')
-        print('')
+            for dest in range(len(keys)+1):
+                print('----', end = '|')
+            print('')
+
+
 
         #print('\nPrint routing table: ' + str(self.rt_tbl_D))
 
