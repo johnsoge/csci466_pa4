@@ -240,10 +240,9 @@ class Router:
                             ch = interface
                             dest_found = True
                     elif not dest_found and (cost + self.rt_tbl_D[p.dst][router])< f:
-                        print("got here")
                         f = val[interface] + self.rt_tbl_D[p.dst][router]
                         ch = interface
-            
+
             self.intf_L[ch].put(p.to_byte_S(), 'out', True)
             print('\n%s: forwarding packet "%s" from interface %d to %d' % \
                 (self, p, i, ch))
@@ -272,6 +271,7 @@ class Router:
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
         new_table = literal_eval(p.data_S)
+        print('Sent in routing table: ' + str(new_table))
 
         update = False
 
@@ -286,7 +286,7 @@ class Router:
                 #if the destination is not in the table
                 elif not dest in self.rt_tbl_D:
                     update = True
-                    self.rt_tbl_D[dest] = new_table[dest]
+                    self.rt_tbl_D[dest] = self.rt_tbl_D.get(dest, {})
                     #add path cost from current router to new destination
                     self.rt_tbl_D[dest][self.name] = new_table[dest][rtr] + self.rt_tbl_D[rtr][self.name]
                 #possible DV algorithm
@@ -302,6 +302,7 @@ class Router:
 
         if update:
             for i in range(len(self.intf_L)):
+                print('Sending routing update on intf: ' + str(i) + ' from Router: ' + self.name)
                 self.send_routes(i)
 
         print('\n%s: Received routing update %s from interface %d' % (self, p, i))

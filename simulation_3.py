@@ -6,7 +6,7 @@ import sys
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 20   #give the network sufficient time to execute transfers
+simulation_time = 20  #give the network sufficient time to execute transfers
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads at the end
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                               max_queue_size=router_queue_size)
     object_L.append(router_c)
 
-    cost_D = {'H2': {2: 3}, 'RB': {0: 10}, 'RC': {1 : 1} } # {neighbor: {interface: cost}}
+    cost_D = {'H2': {2: 3}, 'RB': {0: 9}, 'RC': {1 : 1} } # {neighbor: {interface: cost}}
     router_d = network_3.Router(name='RD',
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
@@ -68,11 +68,11 @@ if __name__ == '__main__':
     sleep(simulation_time)  #let the tables converge
     print("Converged routing tables")
     for obj in object_L:
-        if str(type(obj)) == "<class 'network_2.Router'>":
+        if str(type(obj)) == "<class 'network_3.Router'>":
             obj.print_routes()
 
     #send packet from host 1 to host 2
-    #host_1.udt_send('H2', 'MESSAGE_FROM_H1')
+    host_1.udt_send('H2', 'MESSAGE_FROM_H1')
     host_2.udt_send('H1', 'MESSAGE_FROM_H2')
     sleep(simulation_time)
 
