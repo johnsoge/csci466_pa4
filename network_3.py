@@ -268,10 +268,9 @@ class Router:
     ## forward the packet according to the routing table
     #  @param p Packet containing routing information
     def update_routes(self, p, i):
-        #TODO: add logic to update the routing tables and
-        # possibly send out routing updates
+        print('\n%s: Received routing update %s from interface %d' % (self, p, i))
+
         new_table = literal_eval(p.data_S)
-        print('Sent in routing table: ' + str(new_table))
 
         update = False
 
@@ -298,14 +297,18 @@ class Router:
         temp = {}
         for x in sorted(self.rt_tbl_D):
             temp[x] = self.rt_tbl_D[x]
+
+        # for x in sorted(self.rt_tbl_D):
+        #     temp[x] = {}
+        #     for y in sorted(self.rt_tbl_D[x]):
+        #         temp[x][y] = self.rt_tbl_D[x][y]
+        #
         self.rt_tbl_D = temp
 
         if update:
             for i in range(len(self.intf_L)):
                 print('Sending routing update on intf: ' + str(i) + ' from Router: ' + self.name)
                 self.send_routes(i)
-
-        print('\n%s: Received routing update %s from interface %d' % (self, p, i))
 
 
     ## thread target for the host to keep forwarding data
