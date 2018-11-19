@@ -182,7 +182,7 @@ class Router:
         #get a list of all routers
         router_list = list(self.rt_tbl_D[keys[0]])
         #iterate through each router currently in the routing table and print entries for it
-        for router in router_list:
+        for router in sorted(router_list):
             print('| ' + router + ' ', end = '|')
 
 
@@ -254,8 +254,6 @@ class Router:
     ## send out route update
     # @param i Interface number on which to send out a routing update
     def send_routes(self, i):
-        # TODO: Send out a routing table update
-        #create a routing table update packet
         p = NetworkPacket(0, 'control', str(self.rt_tbl_D))
         try:
             print('\n%s: sending routing update "%s" from interface %d' % (self, p, i))
@@ -289,6 +287,9 @@ class Router:
                     #add path cost from current router to new destination
                     self.rt_tbl_D[dest][self.name] = new_table[dest][rtr] + self.rt_tbl_D[rtr][self.name]
                 #possible DV algorithm
+                elif (new_table[dest][rtr] < self.rt_tbl_D[dest][rtr]):
+                    update = True
+                    self.rt_tbl_D[dest][rtr] = new_table[dest][rtr]
                 elif (new_table[dest][rtr] + self.rt_tbl_D[rtr][self.name]) < (self.rt_tbl_D[dest][self.name]):
                     update = True
                     self.rt_tbl_D[dest][self.name] = new_table[dest][rtr] + self.rt_tbl_D[rtr][self.name]
@@ -306,7 +307,7 @@ class Router:
         self.rt_tbl_D = temp
 
         if update:
-            for i in range(len(self.intf_L)):
+            for i in range(0, len(self.intf_L)):
                 print('Sending routing update on intf: ' + str(i) + ' from Router: ' + self.name)
                 self.send_routes(i)
 

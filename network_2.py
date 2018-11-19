@@ -182,7 +182,7 @@ class Router:
         #get a list of all routers
         router_list = list(self.rt_tbl_D[keys[0]])
         #iterate through each router currently in the routing table and print entries for it
-        for router in router_list:
+        for router in sorted(router_list):
             print('| ' + router + ' ', end = '|')
 
 
@@ -243,7 +243,7 @@ class Router:
                         print("got here")
                         f = val[interface] + self.rt_tbl_D[p.dst][router]
                         ch = interface
-            
+
             self.intf_L[ch].put(p.to_byte_S(), 'out', True)
             print('\n%s: forwarding packet "%s" from interface %d to %d' % \
                 (self, p, i, ch))
